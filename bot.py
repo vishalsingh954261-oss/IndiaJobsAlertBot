@@ -10,6 +10,7 @@ from telegram.ext import (
 import os
 
 TOKEN = os.getenv("BOT_TOKEN")
+
 keyboard = [
     ["📋 Latest Jobs", "🎓 Freshers Jobs"],
     ["🏠 Work From Home", "💻 IT Jobs"],
