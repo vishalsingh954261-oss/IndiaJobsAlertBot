@@ -1,80 +1,83 @@
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    ContextTypes,
+    filters
+)
 
-TOKEN = "8871832997:AAGnZs_4GEAO2FrUIh0WH04IzHnTYRtOv6I"
+TOKEN = "YOUR_BOT_TOKEN"
+
+keyboard = [
+    ["📋 Latest Jobs", "🎓 Freshers Jobs"],
+    ["🏠 Work From Home", "💻 IT Jobs"],
+    ["⭐ Premium", "ℹ️ Help"]
+]
+
+reply_markup = ReplyKeyboardMarkup(
+    keyboard,
+    resize_keyboard=True
+)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🇮🇳 Welcome to IndiaJobsAlertBot!\n\n"
-        "Available Commands:\n"
-        "/jobs - Latest jobs\n"
-        "/freshers - Freshers jobs\n"
-        "/wfh - Work From Home jobs\n"
-        "/itjobs - IT jobs\n"
-        "/help - Help menu"
+        "🇮🇳 Welcome to India Jobs Alert Bot!\n\n"
+        "Choose an option below:",
+        reply_markup=reply_markup
     )
 
-async def jobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🔥 Latest Private Jobs in India\n\n"
-        "1️⃣ Customer Support Executive - Hyderabad\n"
-        "2️⃣ Data Entry Operator - Remote\n"
-        "3️⃣ Admin Executive - Bangalore\n"
-        "4️⃣ Sales Executive - Pune\n"
-        "5️⃣ HR Executive - Chennai"
-    )
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
 
-async def freshers(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🎓 Freshers Jobs\n\n"
-        "1️⃣ Process Associate - Hyderabad\n"
-        "2️⃣ Customer Support - Bangalore\n"
-        "3️⃣ Data Entry Operator - Remote"
-    )
+    if text == "📋 Latest Jobs":
+        await update.message.reply_text(
+            "🔥 Latest Private Jobs in India\n\n"
+            "1️⃣ Customer Support Executive - Hyderabad\n"
+            "2️⃣ Data Entry Operator - Remote\n"
+            "3️⃣ Admin Executive - Bangalore"
+        )
 
-async def wfh(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🏠 Work From Home Jobs\n\n"
-        "1️⃣ Data Entry Operator\n"
-        "2️⃣ Customer Support Executive\n"
-        "3️⃣ Online Sales Representative"
-    )
+    elif text == "🎓 Freshers Jobs":
+        await update.message.reply_text(
+            "🎓 Freshers Jobs\n\n"
+            "1️⃣ Process Associate - Hyderabad\n"
+            "2️⃣ Customer Support - Bangalore\n"
+            "3️⃣ Data Entry Operator - Remote"
+        )
 
-async def itjobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "💻 IT Jobs\n\n"
-        "1️⃣ Python Developer - Bangalore\n"
-        "2️⃣ Software Tester - Hyderabad\n"
-        "3️⃣ Technical Support Engineer - Pune"
-    )
+    elif text == "🏠 Work From Home":
+        await update.message.reply_text(
+            "🏠 Work From Home Jobs\n\n"
+            "1️⃣ Data Entry Operator\n"
+            "2️⃣ Customer Support Executive\n"
+            "3️⃣ Online Sales Representative"
+        )
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "Use these commands:\n\n"
-        "/jobs\n"
-        "/freshers\n"
-        "/wfh\n"
-        "/itjobs"
-    )
+    elif text == "💻 IT Jobs":
+        await update.message.reply_text(
+            "💻 IT Jobs\n\n"
+            "1️⃣ Python Developer - Bangalore\n"
+            "2️⃣ Software Tester - Hyderabad\n"
+            "3️⃣ Technical Support Engineer - Pune"
+        )
+
+    elif text == "⭐ Premium":
+        await update.message.reply_text(
+            "⭐ Premium Plans\n\n"
+            "₹99/month - Instant alerts\n"
+            "₹199/month - Resume review\n"
+            "₹299/month - Priority support"
+        )
+
+    elif text == "ℹ️ Help":
+        await update.message.reply_text(
+            "Tap any button below to browse jobs."
+        )
 
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("jobs", jobs))
-app.add_handler(CommandHandler("freshers", freshers))
-app.add_handler(CommandHandler("wfh", wfh))
-app.add_handler(CommandHandler("itjobs", itjobs))
-app.add_handler(CommandHandler("help", help_command))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, button_handler))
 
-import asyncio
-
-async def main():
-    await app.initialize()
-    await app.start()
-    await app.updater.start_polling()
-
-    while True:
-        await asyncio.sleep(3600)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+app.run_polling()
