@@ -7,8 +7,9 @@ from telegram.ext import (
     filters
 )
 
-TOKEN = "8871832997:AAEYojSfP7gM8XPwc4a1f5nHLETeseN8dtU"
+import os
 
+TOKEN = os.getenv("8871832997:AAEYojSfP7gM8XPwc4a1f5nHLETeseN8dtU")
 keyboard = [
     ["📋 Latest Jobs", "🎓 Freshers Jobs"],
     ["🏠 Work From Home", "💻 IT Jobs"],
