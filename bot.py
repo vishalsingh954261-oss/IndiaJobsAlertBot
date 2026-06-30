@@ -72,9 +72,21 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text in responses:
         await update.message.reply_text(responses[text])
 
+async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        await update.message.reply_text("❌ Access denied.")
+        return
+
+    await update.message.reply_text(
+        "🔧 Admin Panel\n\n"
+        "/addjob\n"
+        "/listjobs\n"
+        "/broadcast"
+    )
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("admin", admin))
 app.add_handler(
     MessageHandler(filters.TEXT & ~filters.COMMAND, button_handler)
 )
