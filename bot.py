@@ -1,3 +1,4 @@
+ADMIN_ID = 6486827183
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
