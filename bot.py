@@ -7,13 +7,36 @@ from telegram.ext import (
     filters
 )
 import os
+import json
 
 TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = 6486827183
 
 if not TOKEN:
-    raise ValueError("BOT_TOKEN environment variable not found")
+    raise ValueError("BOT_TOKEN not found")
 
+JOBS_FILE = "jobs.json"
+
+# -------------------
+# Load jobs
+# -------------------
+def load_jobs():
+    try:
+        with open(JOBS_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return []
+
+# -------------------
+# Save jobs
+# -------------------
+def save_jobs(jobs):
+    with open(JOBS_FILE, "w") as f:
+        json.dump(jobs, f, indent=4)
+
+# -------------------
+# Keyboard
+# -------------------
 keyboard = [
     ["📋 Latest Jobs", "🎓 Freshers Jobs"],
     ["🏠 Work From Home", "💻 IT Jobs"],
@@ -25,71 +48,196 @@ reply_markup = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+# -------------------
+# Start
+# -------------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🇮🇳 Welcome to India Jobs Alert Bot!\n\nChoose an option below:",
+        "🇮🇳 Welcome to India Jobs Alert Bot",
         reply_markup=reply_markup
     )
 
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
-
-    responses = {
-        "📋 Latest Jobs":
-            "🔥 Latest Private Jobs in India\n\n"
-            "1️⃣ Customer Support Executive - Hyderabad\n"
-            "2️⃣ Data Entry Operator - Remote\n"
-            "3️⃣ Admin Executive - Bangalore",
-
-        "🎓 Freshers Jobs":
-            "🎓 Freshers Jobs\n\n"
-            "1️⃣ Process Associate - Hyderabad\n"
-            "2️⃣ Customer Support - Bangalore\n"
-            "3️⃣ Data Entry Operator - Remote",
-
-        "🏠 Work From Home":
-            "🏠 Work From Home Jobs\n\n"
-            "1️⃣ Data Entry Operator\n"
-            "2️⃣ Customer Support Executive\n"
-            "3️⃣ Online Sales Representative",
-
-        "💻 IT Jobs":
-            "💻 IT Jobs\n\n"
-            "1️⃣ Python Developer - Bangalore\n"
-            "2️⃣ Software Tester - Hyderabad\n"
-            "3️⃣ Technical Support Engineer - Pune",
-
-        "⭐ Premium":
-            "⭐ Premium Plans\n\n"
-            "₹99/month - Instant alerts\n"
-            "₹199/month - Resume review\n"
-            "₹299/month - Priority support",
-
-        "ℹ️ Help":
-            "Tap any button below to browse jobs."
-    }
-
-    if text in responses:
-        await update.message.reply_text(responses[text])
-
+# -------------------
+# Admin
+# -------------------
 async def admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
-        await update.message.reply_text("❌ Access denied.")
+        await update.message.reply_text("❌ Access Denied")
         return
 
     await update.message.reply_text(
-        "🔧 Admin Panel\n\n"
+        "🔧 ADMIN PANEL\n\n"
         "/addjob\n"
         "/listjobs\n"
+        "/deletejob\n"
         "/broadcast"
     )
+
+# -------------------
+# Add Job
+# -------------------
+async def addjob(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    text = update.message.text.replace("/addjob ", "")
+
+    parts = text.split("|")
+
+    if len(parts) != 10:
+        await update.message.reply_text(
+            "Format:\n"
+            "/addjob Job Title | Company | Salary | City | Area | Experience | Job Type | Skills | Description | Apply Link"
+        )
+        return
+
+    jobs = load_jobs()
+
+    jobs.append({
+        "title": parts[0].strip(),
+        "company": parts[1].strip(),
+        "salary": parts[2].strip(),
+        "city": parts[3].strip(),
+        "area": parts[4].strip(),
+        "experience": parts[5].strip(),
+        "type": parts[6].strip(),
+        "skills": parts[7].strip(),
+        "description": parts[8].strip(),
+        "link": parts[9].strip()
+    })
+
+    save_jobs(jobs)
+
+    await update.message.reply_text("✅ Job Added Successfully")
+
+# -------------------
+# List Jobs
+# -------------------
+async def listjobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    jobs = load_jobs()
+
+    if not jobs:
+        await update.message.reply_text("No jobs available.")
+        return
+
+    msg = ""
+
+    for i, job in enumerate(jobs, start=1):
+        msg += f"{i}. {job['title']} - {job['company']}\n"
+
+    await update.message.reply_text(msg)
+
+# -------------------
+# Delete Job
+# -------------------
+async def deletejob(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    try:
+        index = int(context.args[0]) - 1
+
+        jobs = load_jobs()
+
+        removed = jobs.pop(index)
+
+        save_jobs(jobs)
+
+        await update.message.reply_text(
+            f"Deleted: {removed['title']}"
+        )
+
+    except:
+        await update.message.reply_text(
+            "Usage:\n/deletejob 1"
+        )
+
+# -------------------
+# Broadcast
+# -------------------
+async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    await update.message.reply_text(
+        "Broadcast feature coming soon."
+    )
+
+# -------------------
+# Buttons
+# -------------------
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    if text == "📋 Latest Jobs":
+        jobs = load_jobs()
+
+        if not jobs:
+            await update.message.reply_text(
+                "No jobs available."
+            )
+            return
+
+        for job in jobs:
+            await update.message.reply_text(
+                f"🏢 Company: {job['company']}\n"
+                f"💼 Job Title: {job['title']}\n"
+                f"💰 Salary: {job['salary']}\n"
+                f"📍 City: {job['city']}\n"
+                f"📌 Area: {job['area']}\n"
+                f"🕒 Experience: {job['experience']}\n"
+                f"📄 Job Type: {job['type']}\n"
+                f"🛠 Skills: {job['skills']}\n"
+                f"📝 Description:\n{job['description']}\n"
+                f"🔗 Apply:\n{job['link']}"
+            )
+
+    elif text == "🎓 Freshers Jobs":
+        await update.message.reply_text(
+            "Showing Freshers Jobs"
+        )
+
+    elif text == "🏠 Work From Home":
+        await update.message.reply_text(
+            "Showing Work From Home Jobs"
+        )
+
+    elif text == "💻 IT Jobs":
+        await update.message.reply_text(
+            "Showing IT Jobs"
+        )
+
+    elif text == "⭐ Premium":
+        await update.message.reply_text(
+            "Premium Coming Soon"
+        )
+
+    elif text == "ℹ️ Help":
+        await update.message.reply_text(
+            "Contact admin for support."
+        )
+
+# -------------------
+# App
+# -------------------
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("admin", admin))
+app.add_handler(CommandHandler("addjob", addjob))
+app.add_handler(CommandHandler("listjobs", listjobs))
+app.add_handler(CommandHandler("deletejob", deletejob))
+app.add_handler(CommandHandler("broadcast", broadcast))
+
 app.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, button_handler)
+    MessageHandler(
+        filters.TEXT & ~filters.COMMAND,
+        button_handler
+    )
 )
 
-print("Bot started successfully...")
+print("Bot Started...")
 app.run_polling()
