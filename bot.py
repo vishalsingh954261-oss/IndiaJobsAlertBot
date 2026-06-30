@@ -7,7 +7,7 @@ from telegram.ext import (
     filters
 )
 
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = "8871832997:AAGnZs_4GEAO2FrUIh0WH04IzHnTYRtOv6I"
 
 keyboard = [
     ["📋 Latest Jobs", "🎓 Freshers Jobs"],
