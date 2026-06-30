@@ -1,4 +1,3 @@
-ADMIN_ID = 6486827183
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -10,6 +9,7 @@ from telegram.ext import (
 import os
 
 TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = 6486827183
 
 if not TOKEN:
     raise ValueError("BOT_TOKEN environment variable not found")
