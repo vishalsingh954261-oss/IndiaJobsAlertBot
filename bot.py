@@ -328,7 +328,6 @@ if apply_options:
 await update.message.reply_text(
     message[:4000]
 )
-            )
 
     except Exception as e:
         await update.message.reply_text(
