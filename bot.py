@@ -10,6 +10,7 @@ import os
 import json
 
 TOKEN = os.getenv("BOT_TOKEN")
+SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 ADMIN_ID = 6486827183
 
 if not TOKEN:
