@@ -259,74 +259,71 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
     title = job.get("title", "Not Available")
     company = job.get("company_name", "Not Available")
     location = job.get("location", "Not Available")
-description = job.get(
-    "description",
-    "No description available."
-)
 
-salary = job.get(
-    "detected_extensions",
-    {}
-).get(
-    "salary",
-    "Salary Not Mentioned"
-)
+    description = job.get(
+        "description",
+        "No description available."
+    )
 
-posted = job.get(
-    "detected_extensions",
-    {}
-).get(
-    "posted_at",
-    "Posting date not available"
-)
+    salary = job.get(
+        "detected_extensions",
+        {}
+    ).get(
+        "salary",
+        "Salary Not Mentioned"
+    )
 
-job_type = job.get(
-    "detected_extensions",
-    {}
-).get(
-    "schedule_type",
-    "Not Mentioned"
-)
+    posted = job.get(
+        "detected_extensions",
+        {}
+    ).get(
+        "posted_at",
+        "Posting date not available"
+    )
 
-via = job.get(
-    "via",
-    "Google Jobs"
-)
+    job_type = job.get(
+        "detected_extensions",
+        {}
+    ).get(
+        "schedule_type",
+        "Not Mentioned"
+    )
 
-apply_options = job.get(
-    "related_links",
-    []
-)
+    via = job.get(
+        "via",
+        "Google Jobs"
+    )
 
-            
-                message = (
-    f"🏢 Company: {company}\n"
-    f"💼 Job Title: {title}\n"
-    f"💰 Salary: {salary}\n"
-    f"📄 Job Type: {job_type}\n"
-    f"🕒 Posted: {posted}\n"
-    f"📍 Location: {location}\n"
-    f"🌐 Source: {via}\n\n"
-    f"📝 Full Description:\n\n"
-    f"{description}\n\n"
-)
+    apply_options = job.get(
+        "related_links",
+        []
+    )
 
-if apply_options:
-    message += "🔗 Apply Links:\n"
+    message = (
+        f"🏢 Company: {company}\n"
+        f"💼 Job Title: {title}\n"
+        f"💰 Salary: {salary}\n"
+        f"📄 Job Type: {job_type}\n"
+        f"🕒 Posted: {posted}\n"
+        f"📍 Location: {location}\n"
+        f"🌐 Source: {via}\n\n"
+        f"📝 Full Description:\n\n"
+        f"{description}\n\n"
+    )
 
-    for link in apply_options[:10]:
-        url = link.get("link")
-        source = link.get("source", "Apply")
+    if apply_options:
+        message += "🔗 Apply Links:\n"
 
-        if url:
-            message += (
-                f"{source}: {url}\n"
-            )
+        for link in apply_options[:10]:
+            url = link.get("link")
+            source = link.get("source", "Apply")
 
-await update.message.reply_text(
-    message[:4000]
-)
+            if url:
+                message += f"{source}: {url}\n"
 
+    await update.message.reply_text(
+        message[:4000]
+    )
     except Exception as e:
         await update.message.reply_text(
             f"Error: {str(e)}"
