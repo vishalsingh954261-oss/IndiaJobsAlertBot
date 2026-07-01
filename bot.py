@@ -233,9 +233,47 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    await update.message.reply_text(
-        "Google Jobs integration is being configured."
-    )
+    query = " ".join(context.args)
+
+    url = "https://serpapi.com/search.json"
+
+    params = {
+        "engine": "google_jobs",
+        "q": query,
+        "api_key": SERPAPI_KEY
+    }
+
+    try:
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        jobs = data.get("jobs_results", [])
+
+        if not jobs:
+            await update.message.reply_text(
+                "No jobs found."
+            )
+            return
+
+        for job in jobs[:5]:
+
+            title = job.get("title", "Not Available")
+            company = job.get("company_name", "Not Available")
+            location = job.get("location", "Not Available")
+            description = job.get("description", "No description available")
+
+            await update.message.reply_text(
+                f"🏢 Company: {company}\n"
+                f"💼 Job Title: {title}\n"
+                f"📍 Location: {location}\n\n"
+                f"📝 Description:\n"
+                f"{description[:700]}"
+            )
+
+    except Exception as e:
+        await update.message.reply_text(
+            f"Error: {str(e)}"
+        )
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
