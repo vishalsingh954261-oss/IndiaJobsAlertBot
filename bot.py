@@ -258,16 +258,76 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for job in jobs[:5]:
 
             title = job.get("title", "Not Available")
-            company = job.get("company_name", "Not Available")
-            location = job.get("location", "Not Available")
-            description = job.get("description", "No description available")
+company = job.get("company_name", "Not Available")
+location = job.get("location", "Not Available")
+
+description = job.get(
+    "description",
+    "No description available."
+)
+
+salary = job.get(
+    "detected_extensions",
+    {}
+).get(
+    "salary",
+    "Salary Not Mentioned"
+)
+
+posted = job.get(
+    "detected_extensions",
+    {}
+).get(
+    "posted_at",
+    "Posting date not available"
+)
+
+job_type = job.get(
+    "detected_extensions",
+    {}
+).get(
+    "schedule_type",
+    "Not Mentioned"
+)
+
+via = job.get(
+    "via",
+    "Google Jobs"
+)
+
+apply_options = job.get(
+    "related_links",
+    []
+)
 
             await update.message.reply_text(
-                f"🏢 Company: {company}\n"
-                f"💼 Job Title: {title}\n"
-                f"📍 Location: {location}\n\n"
-                f"📝 Description:\n"
-                f"{description[:700]}"
+                message = (
+    f"🏢 Company: {company}\n"
+    f"💼 Job Title: {title}\n"
+    f"💰 Salary: {salary}\n"
+    f"📄 Job Type: {job_type}\n"
+    f"🕒 Posted: {posted}\n"
+    f"📍 Location: {location}\n"
+    f"🌐 Source: {via}\n\n"
+    f"📝 Full Description:\n\n"
+    f"{description}\n\n"
+)
+
+if apply_options:
+    message += "🔗 Apply Links:\n"
+
+    for link in apply_options[:10]:
+        url = link.get("link")
+        source = link.get("source", "Apply")
+
+        if url:
+            message += (
+                f"{source}: {url}\n"
+            )
+
+await update.message.reply_text(
+    message[:4000]
+)
             )
 
     except Exception as e:
