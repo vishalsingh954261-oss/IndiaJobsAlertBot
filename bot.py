@@ -8,6 +8,7 @@ from telegram.ext import (
 )
 import os
 import json
+import requests
 
 TOKEN = os.getenv("BOT_TOKEN")
 SERPAPI_KEY = os.getenv("SERPAPI_KEY")
@@ -232,6 +233,7 @@ app.add_handler(CommandHandler("addjob", addjob))
 app.add_handler(CommandHandler("listjobs", listjobs))
 app.add_handler(CommandHandler("deletejob", deletejob))
 app.add_handler(CommandHandler("broadcast", broadcast))
+app.add_handler(CommandHandler("googlejobs", googlejobs))
 
 app.add_handler(
     MessageHandler(
