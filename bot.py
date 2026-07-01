@@ -300,7 +300,7 @@ apply_options = job.get(
     []
 )
 
-            await update.message.reply_text(
+            
                 message = (
     f"🏢 Company: {company}\n"
     f"💼 Job Title: {title}\n"
