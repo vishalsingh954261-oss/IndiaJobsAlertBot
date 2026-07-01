@@ -257,9 +257,9 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         for job in jobs[:5]:
 
-            title = job.get("title", "Not Available")
-company = job.get("company_name", "Not Available")
-location = job.get("location", "Not Available")
+    title = job.get("title", "Not Available")
+    company = job.get("company_name", "Not Available")
+    location = job.get("location", "Not Available")
 
 description = job.get(
     "description",
