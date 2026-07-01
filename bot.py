@@ -255,17 +255,18 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-   (     for job in jobs[:5]:
-    title = job.get("title", "Not Available")
-    company = job.get("company_name", "Not Available")
-    location = job.get("location", "Not Available")
+   (    
+       for job in jobs[:5]:
+        title = job.get("title", "Not Available")
+        company = job.get("company_name", "Not Available")
+        location = job.get("location", "Not Available")
 
-    description = job.get(
+        description = job.get(
         "description",
         "No description available."
     )
 
-    salary = job.get(
+        salary = job.get(
         "detected_extensions",
         {}
     ).get(
@@ -273,7 +274,7 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Salary Not Mentioned"
     )
 
-    posted = job.get(
+        posted = job.get(
         "detected_extensions",
         {}
     ).get(
@@ -281,7 +282,7 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Posting date not available"
     )
 
-    job_type = job.get(
+        job_type = job.get(
         "detected_extensions",
         {}
     ).get(
@@ -289,12 +290,12 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Not Mentioned"
     )
 
-    via = job.get(
+        via = job.get(
         "via",
         "Google Jobs"
     )
 
-    apply_options = job.get(
+        apply_options = job.get(
         "related_links",
         []
     )
