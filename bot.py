@@ -255,75 +255,88 @@ async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-       for job in jobs[:5]:
-        title = job.get("title", "Not Available")
-        company = job.get("company_name", "Not Available")
-        location = job.get("location", "Not Available")
+        for job in jobs[:5]:
 
-        description = job.get(
-        "description",
-        "No description available."
-    )
+            title = job.get(
+                "title",
+                "Not Available"
+            )
 
-        salary = job.get(
-        "detected_extensions",
-        {}
-    ).get(
-        "salary",
-        "Salary Not Mentioned"
-    )
+            company = job.get(
+                "company_name",
+                "Not Available"
+            )
 
-        posted = job.get(
-        "detected_extensions",
-        {}
-    ).get(
-        "posted_at",
-        "Posting date not available"
-    )
+            location = job.get(
+                "location",
+                "Not Available"
+            )
 
-        job_type = job.get(
-        "detected_extensions",
-        {}
-    ).get(
-        "schedule_type",
-        "Not Mentioned"
-    )
+            description = job.get(
+                "description",
+                "No description available."
+            )
 
-        via = job.get(
-        "via",
-        "Google Jobs"
-    )
+            detected = job.get(
+                "detected_extensions",
+                {}
+            )
 
-        apply_options = job.get(
-        "related_links",
-        []
-    )
+            salary = detected.get(
+                "salary",
+                "Salary Not Mentioned"
+            )
 
-    message = (
-        f"🏢 Company: {company}\n"
-        f"💼 Job Title: {title}\n"
-        f"💰 Salary: {salary}\n"
-        f"📄 Job Type: {job_type}\n"
-        f"🕒 Posted: {posted}\n"
-        f"📍 Location: {location}\n"
-        f"🌐 Source: {via}\n\n"
-        f"📝 Full Description:\n\n"
-        f"{description}\n\n"
-    )
+            posted = detected.get(
+                "posted_at",
+                "Posting date not available"
+            )
 
-    if apply_options:
-        message += "🔗 Apply Links:\n"
+            job_type = detected.get(
+                "schedule_type",
+                "Not Mentioned"
+            )
 
-        for link in apply_options[:10]:
-            url = link.get("link")
-            source = link.get("source", "Apply")
+            via = job.get(
+                "via",
+                "Google Jobs"
+            )
 
-            if url:
-                message += f"{source}: {url}\n"
+            apply_links = job.get(
+                "related_links",
+                []
+            )
 
-    await update.message.reply_text(
-        message[:4000]
-    )
+            message = (
+                f"🏢 Company: {company}\n"
+                f"💼 Job Title: {title}\n"
+                f"💰 Salary: {salary}\n"
+                f"📄 Job Type: {job_type}\n"
+                f"🕒 Posted: {posted}\n"
+                f"📍 Location: {location}\n"
+                f"🌐 Source: {via}\n\n"
+                f"📝 Description:\n{description}\n\n"
+            )
+
+            if apply_links:
+                message += "🔗 Apply Links:\n"
+
+                for link in apply_links[:10]:
+                    url = link.get("link")
+                    source = link.get(
+                        "source",
+                        "Apply"
+                    )
+
+                    if url:
+                        message += (
+                            f"{source}: {url}\n"
+                        )
+
+            await update.message.reply_text(
+                message[:4000]
+            )
+
     except Exception as e:
         await update.message.reply_text(
             f"Error: {str(e)}"
