@@ -225,6 +225,17 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # -------------------
 # App
 # -------------------
+async def googlejobs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if not context.args:
+        await update.message.reply_text(
+            "Usage:\n/googlejobs python developer hyderabad"
+        )
+        return
+
+    await update.message.reply_text(
+        "Google Jobs integration is being configured."
+    )
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
